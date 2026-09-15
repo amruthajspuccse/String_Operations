@@ -1,831 +1,166 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Python String Operations Interactive Lab</title>
-<style>
-    :root{
-        --primary:#4f46e5;
-        --primary-light:#eef2ff;
-        --dark:#111827;
-        --muted:#64748b;
-        --border:#dbe3ef;
-        --bg:#f4f7fb;
-        --green:#15803d;
-        --yellow:#f59e0b;
-    }
-    *{box-sizing:border-box}
-    body{
-        margin:0;
-        font-family:Arial,Helvetica,sans-serif;
-        background:var(--bg);
-        color:#172033;
-    }
-    .container{max-width:1150px;margin:auto;padding:24px}
-    header{
-        background:linear-gradient(135deg,#182848,#4b6cb7);
-        color:white;
-        padding:28px;
-        border-radius:20px;
-        margin-bottom:20px;
-    }
-    h1{margin:0 0 8px;font-size:32px}
-    h2{margin-top:0}
-    .subtitle{opacity:.9;line-height:1.5}
-    .tabs{
-        display:flex;
-        flex-wrap:wrap;
-        gap:8px;
-        margin-bottom:18px;
-    }
-    .tab{
-        border:1px solid var(--border);
-        background:white;
-        padding:12px 16px;
-        border-radius:10px;
-        cursor:pointer;
-        font-weight:800;
-        min-height:44px;
-    }
-    .tab.active{background:var(--primary);color:white;border-color:var(--primary)}
-    .panel{
-        background:white;
-        border-radius:18px;
-        padding:22px;
-        box-shadow:0 4px 18px rgba(0,0,0,.05);
-        margin-bottom:20px;
-    }
-    .hidden{display:none}
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:end}
-    .field{flex:1;min-width:170px}
-    label{
-        display:block;
-        font-weight:800;
-        font-size:14px;
-        color:#475569;
-        margin-bottom:6px;
-    }
-    input{
-        width:100%;
-        padding:12px;
-        border:1px solid #cbd5e1;
-        border-radius:9px;
-        font-size:16px;
-        min-height:44px;
-    }
-    button.action{
-        border:0;
-        background:var(--primary);
-        color:white;
-        padding:12px 18px;
-        border-radius:9px;
-        font-weight:800;
-        cursor:pointer;
-        min-height:44px;
-    }
-    button.secondary{
-        border:1px solid var(--border);
-        background:white;
-        padding:11px 16px;
-        border-radius:9px;
-        font-weight:800;
-        cursor:pointer;
-        min-height:44px;
-    }
-    .tip{font-size:14px;color:var(--muted);line-height:1.55}
-    .result{
-        margin-top:15px;
-        background:var(--primary-light);
-        border-left:5px solid var(--primary);
-        border-radius:10px;
-        padding:14px;
-        line-height:1.55;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Choose an interactive Python string operations visualizer.">
+  <title>String Operations Lab</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --background: #f1f5f9;
+      --surface: #ffffff;
+      --text: #0f172a;
+      --muted: #64748b;
+      --border: #cbd5e1;
+      --primary: #4f46e5;
+      --secondary: #0891b2;
+      --shadow: 0 16px 35px rgba(15, 23, 42, 0.08);
     }
 
-    /* INDEXING VISUAL */
-    .index-stage{
-        margin-top:18px;
-        background:var(--dark);
-        color:white;
-        border-radius:16px;
-        padding:24px 18px;
-        overflow:auto;
-    }
-    .index-row{
-        display:flex;
-        align-items:center;
-        min-width:max-content;
-        width:max-content;
-        margin:auto;
-    }
-    .index-label{
-        width:190px;
-        text-align:right;
-        padding-right:18px;
-        font-size:13px;
-        font-weight:900;
-        letter-spacing:.06em;
-        color:#cbd5e1;
-        white-space:nowrap;
-    }
-    .index-label.forward{color:#93c5fd}
-    .index-label.backward{color:#fbbf24}
-    .cells{
-        display:flex;
-        gap:7px;
-    }
-    .slot{
-        width:58px;
-        text-align:center;
-    }
-    .number{
-        font-weight:900;
-        font-size:16px;
-        color:#cbd5e1;
-        height:27px;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-    }
-    .letter{
-        height:60px;
-        background:#263449;
-        border:2px solid #475569;
-        border-radius:10px;
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        font-size:26px;
-        font-weight:900;
-        transition:.25s;
-    }
-    .letter.selected{
-        background:#4f46e5;
-        border-color:#c7d2fe;
-        transform:translateY(-4px);
-        box-shadow:0 0 0 3px rgba(129,140,248,.18);
-    }
-    .forward-number{color:#93c5fd}
-    .backward-number{color:#fbbf24}
-    .same-line{
-        text-align:center;
-        color:#94a3b8;
-        font-size:12px;
-        margin:8px 0;
+    * {
+      box-sizing: border-box;
     }
 
-    /* SLICE ANIMATION */
-    .visual{
-        margin-top:15px;
-        background:var(--dark);
-        color:white;
-        border-radius:15px;
-        padding:20px;
-        overflow:auto;
+    body {
+      min-height: 100vh;
+      margin: 0;
+      padding: 24px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, #eef2ff 0%, #f1f5f9 45%, #ecfeff 100%);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
     }
-    .slice-grid{
-        display:flex;
-        justify-content:center;
-        gap:7px;
-        min-width:max-content;
-    }
-    .slice-item{
-        width:55px;
-        text-align:center;
-    }
-    .slice-cell{
-        height:58px;
-        background:#263449;
-        border:2px solid #475569;
-        border-radius:10px;
-        display:flex;
-        justify-content:center;
-        align-items:center;
-        font-size:23px;
-        font-weight:800;
-        transition:.25s;
-    }
-    .slice-cell.selected{background:var(--green);border-color:#86efac}
-    .slice-cell.current{outline:3px solid var(--yellow);outline-offset:2px;transform:translateY(-5px)}
-    .small-index{font-size:12px;color:#cbd5e1;margin-top:5px}
-    .small-neg{font-size:12px;color:#fbbf24;margin-top:2px}
-    .three{
-        display:grid;
-        grid-template-columns:repeat(3,1fr);
-        gap:10px;
-        margin-top:14px;
-    }
-    .box{
-        background:#f8fafc;
-        border:1px solid var(--border);
-        border-radius:10px;
-        padding:10px;
-        text-align:center;
-    }
-    .box b{display:block;font-size:20px;margin-top:3px}
-    .direction{text-align:center;font-weight:900;margin-top:10px}
-    .anim-controls{
-        display:flex;
-        gap:8px;
-        flex-wrap:wrap;
-        margin-top:12px;
-    }
-    .bar{
-        height:8px;
-        background:#e5e7eb;
-        border-radius:99px;
-        overflow:hidden;
-        margin-top:10px;
-    }
-    .bar-fill{height:100%;width:0;background:var(--primary);transition:.25s}
 
-    .grid{
-        display:grid;
-        grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-        gap:15px;
+    main {
+      width: min(920px, 100%);
+      text-align: center;
     }
-    .card{
-        border:1px solid var(--border);
-        border-radius:14px;
-        padding:16px;
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 7vw, 4rem);
+      line-height: 1.05;
     }
-    .code{
-        font-family:Consolas,monospace;
-        background:var(--dark);
-        color:#e5e7eb;
-        border-radius:8px;
-        padding:11px;
-        margin-top:10px;
-        overflow:auto;
-        white-space:pre-wrap;
+
+    .subtitle {
+      max-width: 620px;
+      margin: 16px auto 36px;
+      color: var(--muted);
+      font-size: 1.05rem;
+      line-height: 1.6;
     }
-    .quiz-card{margin-top:12px}
-    .quiz-answer{
-        width:100%;
-        margin-top:7px;
-        text-align:left;
+
+    .projects {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 22px;
+      padding: 0 8px;
     }
-    .correct{background:#dcfce7!important;border-color:#22c55e!important}
-    .wrong{background:#fee2e2!important;border-color:#ef4444!important}
-    @media(max-width:700px){
-        .container{padding:12px}
-        header{padding:20px}
-        h1{font-size:25px}
-        .index-label{width:145px;font-size:11px}
-        .slot{width:44px}
-        .letter{height:50px;font-size:21px}
-        .three{grid-template-columns:1fr}
+
+    .project-card {
+      min-height: 250px;
+      padding: 30px 26px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      background: var(--surface);
+      box-shadow: var(--shadow);
+      color: inherit;
+      text-decoration: none;
+      transition: transform 180ms ease, border-color 180ms ease, box-shadow 180ms ease;
     }
-</style>
+
+    .project-card:hover,
+    .project-card:focus-visible {
+      transform: translateY(-5px);
+      border-color: currentColor;
+      box-shadow: 0 20px 42px rgba(15, 23, 42, 0.14);
+    }
+
+    .project-card:focus-visible {
+      outline: 3px solid rgba(79, 70, 229, 0.35);
+      outline-offset: 4px;
+    }
+
+    .project-card:first-child {
+      color: var(--primary);
+    }
+
+    .project-card:last-child {
+      color: var(--secondary);
+    }
+
+    .icon {
+      width: 62px;
+      height: 62px;
+      margin-bottom: 18px;
+      display: grid;
+      place-items: center;
+      border-radius: 18px;
+      background: color-mix(in srgb, currentColor 10%, white);
+      font-size: 1.8rem;
+      font-weight: 800;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      color: var(--text);
+      font-size: 1.45rem;
+    }
+
+    p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+
+    .open {
+      margin-top: 22px;
+      padding: 10px 18px;
+      border-radius: 999px;
+      background: currentColor;
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 800;
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding: 16px;
+      }
+
+      .project-card {
+        min-height: 225px;
+        padding: 24px 20px;
+      }
+    }
+  </style>
 </head>
 <body>
-<div class="container">
+  <main>
+    <h1>String Operations Lab</h1>
+    <p class="subtitle">Choose an interactive visualizer to explore Python indexing, slicing, and string operations.</p>
 
-<header>
-    <h1>🐍 Python String Operations Interactive Lab</h1>
-    <div class="subtitle">
-        Demonstrate Forward Indexing, Backward Indexing, Slicing, String Operations and Quiz questions.
+    <div class="projects">
+      <a class="project-card" href="string.html">
+        <span class="icon" aria-hidden="true">01</span>
+        <h2>String Visualizer</h2>
+        <p>Explore indexing, concatenation, repetition, membership, and slicing.</p>
+        <span class="open">Open visualizer</span>
+      </a>
+
+      <a class="project-card" href="string1.html">
+        <span class="icon" aria-hidden="true">02</span>
+        <h2>Interactive Lab</h2>
+        <p>Learn with animations, string operation examples, and an interactive quiz.</p>
+        <span class="open">Open interactive lab</span>
+      </a>
     </div>
-</header>
-
-<div class="tabs">
-    <button class="tab active" data-tab="indexing">🔢 Indexing</button>
-    <button class="tab" data-tab="slicing">✂️ Slicing</button>
-    <button class="tab" data-tab="operations">⚙️ String Operations</button>
-    <button class="tab" data-tab="quiz">🎯 Quiz</button>
-</div>
-
-<!-- INDEXING -->
-<section id="indexing" class="panel">
-    <h2>Forward & Backward Indexing</h2>
-    <p class="tip">
-        Forward indexing starts from <b>0</b>. Backward indexing starts from <b>-1</b>.
-        The two rows point to the same characters.
-    </p>
-
-    <div class="row">
-        <div class="field">
-            <label>Enter a word / string</label>
-            <input id="word" value="PYTHON" maxlength="30">
-        </div>
-        <div style="width:120px">
-            <label>Index</label>
-            <input id="index" type="number" value="0">
-        </div>
-        <button class="action" id="showIndex">Show Character</button>
-    </div>
-
-    <div class="index-stage">
-        <div class="index-row">
-            <div class="index-label forward">FORWARD INDEXING</div>
-            <div id="forwardRow" class="cells"></div>
-        </div>
-
-        <div class="index-row">
-            <div class="index-label">&nbsp;</div>
-            <div id="letterRow" class="cells"></div>
-        </div>
-
-        <div class="same-line">↑ SAME CHARACTER ↑</div>
-
-        <div class="index-row">
-            <div class="index-label backward">BACKWARD INDEXING</div>
-            <div id="backwardRow" class="cells"></div>
-        </div>
-    </div>
-
-    <div id="indexResult" class="result"></div>
-</section>
-
-<!-- SLICING -->
-<section id="slicing" class="panel hidden">
-    <h2>Slicing Playground & Animation</h2>
-    <p class="tip">
-        Syntax: <b>string[start:stop:step]</b>.
-        Start is included. Stop is excluded.
-    </p>
-
-    <div class="row">
-        <div class="field">
-            <label>String</label>
-            <input id="sliceWord" value="PYTHON">
-        </div>
-        <div style="width:95px">
-            <label>Start</label>
-            <input id="sliceStart" type="number" value="0">
-        </div>
-        <div style="width:95px">
-            <label>Stop</label>
-            <input id="sliceStop" type="number" value="6">
-        </div>
-        <div style="width:95px">
-            <label>Step</label>
-            <input id="sliceStep" type="number" value="2">
-        </div>
-        <button class="action" id="visualizeSlice">Visualize Slice</button>
-    </div>
-
-    <div class="visual">
-        <div id="sliceChars" class="slice-grid"></div>
-    </div>
-
-    <div id="sliceResult" class="result"></div>
-
-    <div class="three">
-        <div class="box">START<b id="startView">0</b></div>
-        <div class="box">STOP (EXCLUDED)<b id="stopView">6</b></div>
-        <div class="box">STEP<b id="stepView">2</b></div>
-    </div>
-
-    <div id="direction" class="direction">➡️ Positive step: left → right</div>
-
-    <div class="anim-controls">
-        <button class="action" id="play">▶ Play Animation</button>
-        <button class="secondary" id="next">⏭ Next Step</button>
-        <button class="secondary" id="reset">↺ Reset</button>
-    </div>
-
-    <div id="animationText" class="result">
-        Press <b>Play Animation</b> to watch the step movement.
-    </div>
-
-    <div class="bar">
-        <div id="progress" class="bar-fill"></div>
-    </div>
-</section>
-
-<!-- STRING OPERATIONS -->
-<section id="operations" class="panel hidden">
-    <h2>String Operations</h2>
-
-    <div class="grid">
-        <div class="card">
-            <h3>➕ Concatenation</h3>
-            <div class="row">
-                <div class="field">
-                    <label>String 1</label>
-                    <input id="catA" value="Hello">
-                </div>
-                <div class="field">
-                    <label>String 2</label>
-                    <input id="catB" value="World">
-                </div>
-            </div>
-            <div id="catOut" class="code"></div>
-            <p class="tip">Uses the <b>+</b> operator.</p>
-        </div>
-
-        <div class="card">
-            <h3>🔁 Repetition</h3>
-            <div class="row">
-                <div class="field">
-                    <label>String</label>
-                    <input id="repA" value="Hi">
-                </div>
-                <div style="width:90px">
-                    <label>Times</label>
-                    <input id="repN" type="number" value="3" min="0" max="10">
-                </div>
-            </div>
-            <div id="repOut" class="code"></div>
-            <p class="tip">Uses the <b>*</b> operator.</p>
-        </div>
-
-        <div class="card">
-            <h3>🔎 Membership</h3>
-            <div class="row">
-                <div class="field">
-                    <label>Main string</label>
-                    <input id="memA" value="Python">
-                </div>
-                <div class="field">
-                    <label>Search text</label>
-                    <input id="memB" value="Py">
-                </div>
-            </div>
-            <div id="memIn" class="code"></div>
-            <div id="memNotIn" class="code"></div>
-            <p class="tip">
-                <b>in</b> checks whether text exists.<br>
-                <b>not in</b> checks whether text does not exist.
-            </p>
-        </div>
-    </div>
-</section>
-
-<!-- QUIZ -->
-<section id="quiz" class="panel hidden">
-    <h2>🎯 Interactive Quiz</h2>
-    <p class="tip">Click an answer. Correct answers turn green.</p>
-    <div id="quizArea"></div>
-</section>
-
-</div>
-
-<script>
-(function(){
-    const $ = id => document.getElementById(id);
-    const tabs = document.querySelectorAll(".tab");
-    let timer = null;
-    let slicePosition = -1;
-
-    function escapeHTML(s){
-        return String(s).replace(/[&<>]/g, ch => ({
-            "&":"&amp;","<":"&lt;",">":"&gt;"
-        }[ch]));
-    }
-
-    /* TAB SWITCHING */
-    tabs.forEach(tab=>{
-        tab.addEventListener("click",()=>{
-            tabs.forEach(t=>t.classList.remove("active"));
-            tab.classList.add("active");
-            ["indexing","slicing","operations","quiz"].forEach(id=>{
-                $(id).classList.toggle("hidden", id !== tab.dataset.tab);
-            });
-        });
-    });
-
-    /* INDEXING */
-    function renderIndex(){
-        const text = $("word").value;
-        const index = parseInt($("index").value,10);
-
-        $("forwardRow").innerHTML = "";
-        $("letterRow").innerHTML = "";
-        $("backwardRow").innerHTML = "";
-
-        if(!text){
-            $("indexResult").textContent = "Enter a word or string.";
-            return;
-        }
-
-        const actual = index < 0 ? text.length + index : index;
-
-        [...text].forEach((ch,i)=>{
-            const f = document.createElement("div");
-            f.className = "slot";
-            f.innerHTML = `
-                <div class="number forward-number">${i}</div>
-            `;
-            $("forwardRow").appendChild(f);
-
-            const l = document.createElement("div");
-            l.className = "slot";
-            l.innerHTML = `
-                <div class="letter ${i===actual ? "selected" : ""}">
-                    ${ch === " " ? "␠" : escapeHTML(ch)}
-                </div>
-            `;
-            $("letterRow").appendChild(l);
-
-            const b = document.createElement("div");
-            b.className = "slot";
-            b.innerHTML = `
-                <div class="number backward-number">${i-text.length}</div>
-            `;
-            $("backwardRow").appendChild(b);
-        });
-
-        if(actual >= 0 && actual < text.length){
-            $("indexResult").innerHTML = `
-                <b>Selected character:</b> "${escapeHTML(text[actual])}"<br>
-                <b>Forward index:</b> ${actual}
-                &nbsp; | &nbsp;
-                <b>Backward index:</b> ${actual-text.length}
-                <br>
-                <span class="tip">
-                    You entered index <b>${index}</b>. Both indexing methods identify
-                    the same character.
-                </span>
-            `;
-        }else{
-            $("indexResult").innerHTML =
-                `❌ Index out of range. Valid indexes are ${-text.length} to ${text.length-1}.`;
-        }
-    }
-
-    $("showIndex").addEventListener("click",renderIndex);
-    $("word").addEventListener("input",renderIndex);
-    $("index").addEventListener("input",renderIndex);
-
-    /* SLICING DATA */
-    function sliceData(){
-        const text = $("sliceWord").value;
-        const arr = [...text];
-        let start = parseInt($("sliceStart").value,10);
-        let stop = parseInt($("sliceStop").value,10);
-        let step = parseInt($("sliceStep").value,10);
-
-        if(Number.isNaN(start)) start = 0;
-        if(Number.isNaN(stop)) stop = arr.length;
-        if(Number.isNaN(step) || step === 0) step = 1;
-
-        let s = start < 0 ? Math.max(0,arr.length+start) : Math.min(arr.length,start);
-        let e = stop < 0 ? Math.max(0,arr.length+stop) : Math.min(arr.length,stop);
-
-        const out = [];
-        if(step > 0){
-            for(let i=s;i<e;i+=step) out.push(i);
-        }else{
-            for(let i=s;i>e;i+=step) out.push(i);
-        }
-        return {text,arr,start,stop,step,out};
-    }
-
-    function drawSlice(current=-1){
-        const d = sliceData();
-        $("sliceChars").innerHTML = "";
-
-        d.arr.forEach((ch,i)=>{
-            const item = document.createElement("div");
-            item.className = "slice-item";
-            item.innerHTML = `
-                <div class="slice-cell ${d.out.includes(i) ? "selected" : ""} ${i===current ? "current" : ""}">
-                    ${ch === " " ? "␠" : escapeHTML(ch)}
-                </div>
-                <div class="small-index">${i}</div>
-                <div class="small-neg">${i-d.arr.length}</div>
-            `;
-            $("sliceChars").appendChild(item);
-        });
-
-        $("startView").textContent = d.start;
-        $("stopView").textContent = d.stop;
-        $("stepView").textContent = d.step;
-
-        $("direction").textContent =
-            d.step > 0
-            ? "➡️ Positive step: moving LEFT → RIGHT"
-            : "⬅️ Negative step: moving RIGHT → LEFT";
-
-        const result = d.out.map(i=>d.arr[i]).join("");
-        $("sliceResult").innerHTML = `
-            <b>Result:</b> "${escapeHTML(result)}"<br>
-            <span class="tip">
-                Expression: <b>${escapeHTML(d.text)}[${d.start}:${d.stop}:${d.step}]</b><br>
-                Selected indexes: ${d.out.join(", ") || "none"}
-            </span>
-        `;
-        return d;
-    }
-
-    $("visualizeSlice").addEventListener("click",()=>{
-        if(timer){clearInterval(timer);timer=null;}
-        slicePosition = -1;
-        drawSlice();
-        $("progress").style.width = "0%";
-        $("play").textContent = "▶ Play Animation";
-        $("animationText").innerHTML =
-            'Ready. Press <b>Play Animation</b> to watch the movement.';
-    });
-
-    ["sliceWord","sliceStart","sliceStop","sliceStep"].forEach(id=>{
-        $(id).addEventListener("input",()=>{
-            if(timer){clearInterval(timer);timer=null;}
-            slicePosition = -1;
-            $("play").textContent = "▶ Play Animation";
-            $("progress").style.width = "0%";
-            drawSlice();
-        });
-    });
-
-    function animationStep(){
-        const d = sliceData();
-
-        if(!d.out.length){
-            $("animationText").textContent =
-                "No character is selected with these values.";
-            return;
-        }
-
-        slicePosition++;
-
-        if(slicePosition >= d.out.length){
-            slicePosition = d.out.length - 1;
-            drawSlice(d.out[slicePosition]);
-            $("progress").style.width = "100%";
-            $("animationText").innerHTML =
-                `✅ Finished. Python selected indexes:
-                 <b>${d.out.join(" → ")}</b>.`;
-            if(timer){
-                clearInterval(timer);
-                timer = null;
-            }
-            $("play").textContent = "▶ Play Again";
-            return;
-        }
-
-        const current = d.out[slicePosition];
-        const next = d.out[slicePosition+1];
-
-        drawSlice(current);
-        $("progress").style.width =
-            ((slicePosition+1)/d.out.length*100) + "%";
-
-        $("animationText").innerHTML = `
-            📍 <b>Current index:</b> ${current}<br>
-            ${next !== undefined
-                ? `<b>Next jump:</b> ${current} → ${next}
-                   &nbsp; (${d.step > 0 ? "+" : "−"}${Math.abs(d.step)})`
-                : `<b>This is the last selected index.</b>`
-            }
-        `;
-    }
-
-    $("play").addEventListener("click",()=>{
-        if(timer){
-            clearInterval(timer);
-            timer = null;
-            $("play").textContent = "▶ Resume Animation";
-            return;
-        }
-
-        const d = sliceData();
-        if(slicePosition >= d.out.length-1) slicePosition = -1;
-
-        $("play").textContent = "⏸ Pause";
-        animationStep();
-
-        if(d.out.length && slicePosition < d.out.length-1){
-            timer = setInterval(animationStep,850);
-        }
-    });
-
-    $("next").addEventListener("click",()=>{
-        if(timer){clearInterval(timer);timer=null;}
-        if(slicePosition >= sliceData().out.length-1) slicePosition = -1;
-        animationStep();
-    });
-
-    $("reset").addEventListener("click",()=>{
-        if(timer){clearInterval(timer);timer=null;}
-        slicePosition = -1;
-        $("play").textContent = "▶ Play Animation";
-        $("progress").style.width = "0%";
-        drawSlice();
-        $("animationText").innerHTML =
-            'Press <b>Play Animation</b> to watch the movement.';
-    });
-
-    /* STRING OPERATIONS */
-    function updateOperations(){
-        const a = $("catA").value;
-        const b = $("catB").value;
-        $("catOut").textContent = `"${a}" + "${b}"  →  "${a+b}"`;
-
-        const r = $("repA").value;
-        let n = parseInt($("repN").value,10);
-        if(Number.isNaN(n)) n=0;
-        n=Math.max(0,Math.min(10,n));
-        $("repOut").textContent = `"${r}" * ${n}  →  "${r.repeat(n)}"`;
-
-        const m = $("memA").value;
-        const q = $("memB").value;
-        $("memIn").textContent = `"${q}" in "${m}"  →  ${m.includes(q)}`;
-        $("memNotIn").textContent = `"${q}" not in "${m}"  →  ${!m.includes(q)}`;
-    }
-
-    ["catA","catB","repA","repN","memA","memB"].forEach(id=>{
-        $(id).addEventListener("input",updateOperations);
-    });
-
-    /* QUIZ */
-    const questions = [
-        {
-            q:'If word = "PYTHON", what is word[0]?',
-            a:["P","Y","T","N"], c:0
-        },
-        {
-            q:'If word = "PYTHON", what is word[-1]?',
-            a:["P","O","N","T"], c:2
-        },
-        {
-            q:'What is "PYTHON"[1:4]?',
-            a:["PYT","YTH","YTHO","THO"], c:1
-        },
-        {
-            q:'What is "ABC"[::2]?',
-            a:["AB","AC","BC","ABC"], c:1
-        },
-        {
-            q:'What does "Py" * 3 produce?',
-            a:["Py3","PyPyPy","3Py","Error"], c:1
-        },
-        {
-            q:'What does "thon" in "python" return?',
-            a:["True","False","thon","Error"], c:0
-        },
-        {
-            q:'What does "java" not in "python" return?',
-            a:["True","False","java","Error"], c:0
-        },
-        {
-            q:'Which index represents the last character?',
-            a:["0","1","-1","-2"], c:2
-        },
-        {
-            q:'Which operation joins two strings?',
-            a:["Slicing","Membership","Concatenation","Repetition"], c:2
-        },
-        {
-            q:'What is "HELLO"[-3:]?',
-            a:["HEL","ELL","LLO","LO"], c:2
-        },
-        {
-            q:'What is "ABCDE"[1:5:2]?',
-            a:["AC","BD","B D","BCD"], c:1
-        },
-        {
-            q:'For [start:stop:step], is stop included?',
-            a:["Yes","No","Only sometimes","Only with -1"], c:1
-        }
-    ];
-
-    $("quizArea").innerHTML = questions.map((q,qi)=>`
-        <div class="card quiz-card">
-            <h3>Question ${qi+1}</h3>
-            <p><b>${escapeHTML(q.q)}</b></p>
-            ${q.a.map((ans,i)=>`
-                <button class="secondary quiz-answer"
-                    data-q="${qi}" data-a="${i}">
-                    ${String.fromCharCode(65+i)}. ${escapeHTML(ans)}
-                </button>
-            `).join("")}
-            <div id="quizResult${qi}" class="result hidden"></div>
-        </div>
-    `).join("");
-
-    document.querySelectorAll(".quiz-answer").forEach(btn=>{
-        btn.addEventListener("click",()=>{
-            const qi = Number(btn.dataset.q);
-            const ai = Number(btn.dataset.a);
-            const q = questions[qi];
-            const card = btn.parentElement;
-
-            card.querySelectorAll(".quiz-answer")
-                .forEach(b=>b.classList.remove("correct","wrong"));
-
-            const result = $("quizResult"+qi);
-            result.classList.remove("hidden");
-
-            if(ai === q.c){
-                btn.classList.add("correct");
-                result.innerHTML = "✅ <b>Correct!</b>";
-            }else{
-                btn.classList.add("wrong");
-                result.innerHTML =
-                    `❌ Try again. Think about the Python rule carefully.`;
-            }
-        });
-    });
-
-    renderIndex();
-    drawSlice();
-    updateOperations();
-})();
-</script>
-
+  </main>
 </body>
 </html>
