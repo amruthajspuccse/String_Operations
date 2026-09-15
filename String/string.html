@@ -1,0 +1,1064 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Python String Indexing & Operations Visualizer</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --code-bg: #090d16;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    }
+
+    body {
+      background-color: #0f172a;
+      color: var(--text-main);
+      padding: 24px 16px 60px;
+      line-height: 1.5;
+    }
+
+    .container {
+      max-width: 1050px;
+      margin: 0 auto;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 28px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, #60a5fa 0%, #c084fc 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 6px;
+    }
+
+    header p {
+      color: var(--text-muted);
+      font-size: 1rem;
+    }
+
+    .tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 24px;
+    }
+
+    .tab-btn {
+      background-color: var(--card-bg);
+      color: var(--text-muted);
+      border: 1px solid var(--card-border);
+      padding: 10px 18px;
+      border-radius: 9999px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      border-color: #64748b;
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      background-color: var(--primary);
+      border-color: var(--primary);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    }
+
+    .section-card {
+      display: none;
+      background-color: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+    }
+
+    .section-card.active {
+      display: block;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 18px;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .section-header h2 {
+      font-size: 1.4rem;
+    }
+
+    .badge {
+      padding: 4px 10px;
+      font-size: 0.8rem;
+      border-radius: 6px;
+      font-weight: 600;
+    }
+
+    .badge-blue { background: #1e3a8a; color: #93c5fd; }
+    .badge-orange { background: #7c2d12; color: #fdba74; }
+    .badge-purple { background: #581c87; color: #d8b4fe; }
+    .badge-green { background: #064e3b; color: #6ee7b7; }
+
+    .input-group {
+      margin-bottom: 16px;
+    }
+
+    .input-label {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .text-input, .num-input {
+      width: 100%;
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 10px 14px;
+      color: #fff;
+      font-size: 1.05rem;
+      font-family: monospace;
+      outline: none;
+    }
+
+    .text-input:focus, .num-input:focus {
+      border-color: var(--primary);
+    }
+
+    .ribbon-wrapper {
+      overflow-x: auto;
+      padding: 16px 4px;
+      margin-bottom: 20px;
+    }
+
+    .string-grid {
+      display: inline-flex;
+      gap: 8px;
+      align-items: center;
+      padding: 4px;
+    }
+
+    .char-column {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      user-select: none;
+      cursor: pointer;
+      transition: transform 0.15s ease;
+    }
+
+    .char-column:hover {
+      transform: translateY(-2px);
+    }
+
+    .idx-forward {
+      font-family: monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #38bdf8;
+      background: rgba(2, 132, 199, 0.15);
+      border: 1px solid rgba(2, 132, 199, 0.4);
+      padding: 3px 6px;
+      border-radius: 6px;
+      width: 44px;
+      text-align: center;
+    }
+
+    .char-cell {
+      width: 48px;
+      height: 54px;
+      background: #0f172a;
+      border: 2px solid #3b82f6;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: monospace;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #ffffff;
+      transition: all 0.2s ease;
+    }
+
+    .idx-backward {
+      font-family: monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: #fb923c;
+      background: rgba(234, 88, 12, 0.15);
+      border: 1px solid rgba(234, 88, 12, 0.4);
+      padding: 3px 6px;
+      border-radius: 6px;
+      width: 44px;
+      text-align: center;
+    }
+
+    .char-column.active .char-cell {
+      background: #2563eb;
+      border-color: #60a5fa;
+      color: #ffffff;
+      box-shadow: 0 0 14px rgba(59, 130, 246, 0.8);
+      transform: scale(1.06);
+    }
+
+    .char-column.slice-selected .char-cell {
+      background: #059669;
+      border-color: #34d399;
+      box-shadow: 0 0 12px rgba(5, 150, 105, 0.6);
+    }
+
+    .char-column.slice-dimmed {
+      opacity: 0.35;
+    }
+
+    .console-box {
+      background: var(--code-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 14px 18px;
+      font-family: monospace;
+      font-size: 1rem;
+      color: #38bdf8;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .console-code {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .console-code .prompt { color: #f472b6; }
+
+    .info-card {
+      background: rgba(15, 23, 42, 0.6);
+      border-left: 4px solid var(--primary);
+      padding: 12px 16px;
+      border-radius: 0 8px 8px 0;
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      margin-top: 14px;
+    }
+
+    .info-card strong {
+      color: #e2e8f0;
+    }
+
+    .error-card {
+      background: rgba(220, 38, 38, 0.15);
+      border: 1px solid rgba(220, 38, 38, 0.4);
+      color: #fca5a5;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-family: monospace;
+      font-size: 0.9rem;
+      display: none;
+      margin-bottom: 12px;
+    }
+
+    .btn-preset {
+      background: #334155;
+      color: #e2e8f0;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      font-family: monospace;
+      transition: background 0.15s;
+    }
+
+    .btn-preset:hover {
+      background: #475569;
+    }
+
+    .presets-container {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      margin-bottom: 16px;
+      align-items: center;
+    }
+
+    .presets-label {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      font-weight: 600;
+    }
+
+    .result-display {
+      background: rgba(30, 41, 59, 0.9);
+      border: 2px dashed #475569;
+      border-radius: 12px;
+      padding: 16px 20px;
+      margin-top: 18px;
+      text-align: center;
+    }
+
+    .result-display .res-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      letter-spacing: 0.05em;
+      margin-bottom: 6px;
+    }
+
+    .result-display .res-value {
+      font-family: monospace;
+      font-size: 1.6rem;
+      font-weight: 700;
+      color: #4ade80;
+    }
+
+    .trace-list {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .trace-item {
+      background: #0f172a;
+      border: 1px solid #334155;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-family: monospace;
+      font-size: 0.85rem;
+      color: #34d399;
+      border-color: #34d399;
+    }
+
+    .teaching-box {
+      margin-top: 22px;
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.08) 0%, rgba(124, 58, 237, 0.08) 100%);
+      border: 1px solid rgba(124, 58, 237, 0.3);
+      border-radius: 12px;
+      padding: 16px 20px;
+    }
+
+    .teaching-box h3 {
+      font-size: 1.05rem;
+      color: #c084fc;
+      margin-bottom: 8px;
+    }
+
+    .teaching-box ul {
+      margin-left: 20px;
+      color: #cbd5e1;
+      font-size: 0.9rem;
+    }
+
+    .teaching-box li {
+      margin-bottom: 6px;
+    }
+
+    .slider-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-top: 8px;
+    }
+
+    .slider {
+      flex: 1;
+      height: 8px;
+      border-radius: 4px;
+      background: #334155;
+      outline: none;
+      accent-color: #7c3aed;
+      cursor: pointer;
+    }
+
+    .slice-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Python String Visualizer</h1>
+    <p>Forward &amp; Backward Indexing and Word Operations</p>
+  </header>
+
+  <!-- Tabs Navigation -->
+  <nav class="tabs">
+    <button class="tab-btn active" onclick="switchTab('indexing')">🔢 Indexing</button>
+    <button class="tab-btn" onclick="switchTab('concatenation')">➕ Concatenation (+)</button>
+    <button class="tab-btn" onclick="switchTab('repetition')">🔁 Repetition (*)</button>
+    <button class="tab-btn" onclick="switchTab('membership')">🔍 Membership (in)</button>
+    <button class="tab-btn" onclick="switchTab('slicing')">✂️ Slicing [::]</button>
+  </nav>
+
+  <!-- 1. INDEXING SECTION -->
+  <section id="tab-indexing" class="section-card active">
+    <div class="section-header">
+      <div>
+        <h2>Forward &amp; Backward Indexing</h2>
+        <p style="color:var(--text-muted); font-size:0.9rem;">Left-to-right (positive) vs. right-to-left (negative) indexing.</p>
+      </div>
+      <div style="display:flex; gap:6px;">
+        <span class="badge badge-blue">Forward: 0 to len-1</span>
+        <span class="badge badge-orange">Backward: -1 to -len</span>
+      </div>
+    </div>
+
+    <div class="input-group">
+      <label class="input-label" for="idx-word-input">String (s):</label>
+      <input type="text" id="idx-word-input" class="text-input" value="PROGRAMMING">
+    </div>
+
+    <div class="presets-container">
+      <span class="presets-label">Presets:</span>
+      <button class="btn-preset" onclick="setIndexWord('PYTHON')">PYTHON</button>
+      <button class="btn-preset" onclick="setIndexWord('COMPUTER')">COMPUTER</button>
+      <button class="btn-preset" onclick="setIndexWord('DATA')">DATA</button>
+      <button class="btn-preset" onclick="setIndexWord('HELLO WORLD')">HELLO WORLD</button>
+    </div>
+
+    <div class="ribbon-wrapper">
+      <div id="indexing-grid" class="string-grid"></div>
+    </div>
+
+    <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; align-items: flex-end;">
+      <div style="width: 160px;">
+        <label class="input-label" for="test-index-input">Inspect Index (i):</label>
+        <input type="number" id="test-index-input" class="num-input" value="0">
+      </div>
+      <div style="display: flex; gap: 6px;">
+        <button class="btn-preset" style="padding: 10px 14px;" onclick="stepIndex(-1)">◀ Prev</button>
+        <button class="btn-preset" style="padding: 10px 14px;" onclick="stepIndex(1)">Next ▶</button>
+      </div>
+    </div>
+
+    <div id="index-error" class="error-card"></div>
+
+    <div class="console-box">
+      <div class="console-code">
+        <span class="prompt">&gt;&gt;&gt;</span>
+        <span id="index-code-expr">s[0]</span>
+      </div>
+      <div id="index-code-result" style="color:#4ade80; font-weight:700;">'P'</div>
+    </div>
+
+    <div class="info-card" id="index-explanation"></div>
+
+    <div class="teaching-box">
+      <h3>Key Teaching Points</h3>
+      <ul>
+        <li><strong>Forward Indexing:</strong> Begins at <code>0</code> from the left up to <code>len(s) - 1</code>.</li>
+        <li><strong>Backward Indexing:</strong> Begins at <code>-1</code> for the last character down to <code>-len(s)</code>.</li>
+        <li><strong>Formula:</strong> <code>negative_index = forward_index - len(s)</code>.</li>
+        <li><strong>IndexError:</strong> Trying to index beyond limits produces an <code>IndexError</code>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 2. CONCATENATION SECTION -->
+  <section id="tab-concatenation" class="section-card">
+    <div class="section-header">
+      <div>
+        <h2>String Concatenation (<code>+</code>)</h2>
+        <p style="color:var(--text-muted); font-size:0.9rem;">Joins two strings to produce a new string.</p>
+      </div>
+      <span class="badge badge-purple">Binary Operator</span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 16px;">
+      <div class="input-group">
+        <label class="input-label" for="concat-s1">String 1 (s1):</label>
+        <input type="text" id="concat-s1" class="text-input" value="Data">
+      </div>
+      <div class="input-group">
+        <label class="input-label" for="concat-s2">String 2 (s2):</label>
+        <input type="text" id="concat-s2" class="text-input" value="Science">
+      </div>
+    </div>
+
+    <div style="margin-bottom: 16px;">
+      <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; color: var(--text-muted);">
+        <input type="checkbox" id="concat-space-toggle" onchange="renderConcat()"> Include space between (<code>s1 + " " + s2</code>)
+      </label>
+    </div>
+
+    <div class="console-box">
+      <div class="console-code">
+        <span class="prompt">&gt;&gt;&gt;</span>
+        <span id="concat-code-expr">s1 + s2</span>
+      </div>
+      <div id="concat-code-result" style="color:#4ade80; font-weight:700;">'DataScience'</div>
+    </div>
+
+    <div class="result-display">
+      <div class="res-title">Concatenated Result</div>
+      <div class="res-value" id="concat-visual-res">"DataScience"</div>
+      <div style="margin-top:6px; color:var(--text-muted); font-size:0.85rem;" id="concat-len-info"></div>
+    </div>
+
+    <div class="teaching-box">
+      <h3>Key Teaching Points</h3>
+      <ul>
+        <li><strong>Type Restriction:</strong> Python does not permit concatenating a string with an integer directly (e.g. <code>"Age: " + 25</code> raises a <code>TypeError</code>). Explicit conversion using <code>str()</code> is required.</li>
+        <li><strong>Immutability:</strong> Original variables <code>s1</code> and <code>s2</code> remain unmodified in memory.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 3. REPETITION SECTION -->
+  <section id="tab-repetition" class="section-card">
+    <div class="section-header">
+      <div>
+        <h2>String Repetition (<code>*</code>)</h2>
+        <p style="color:var(--text-muted); font-size:0.9rem;">Repeats a string sequence <code>n</code> times.</p>
+      </div>
+      <span class="badge badge-purple">String * Int</span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 16px;">
+      <div class="input-group">
+        <label class="input-label" for="repeat-str">String (s):</label>
+        <input type="text" id="repeat-str" class="text-input" value="Code ">
+      </div>
+      <div class="input-group">
+        <label class="input-label" for="repeat-n">Multiplier (n):</label>
+        <input type="number" id="repeat-n" class="num-input" value="4">
+      </div>
+    </div>
+
+    <div class="slider-row" style="margin-bottom: 18px;">
+      <span style="font-size:0.85rem; color:var(--text-muted);">Quick Slider:</span>
+      <input type="range" id="repeat-slider" class="slider" min="0" max="10" value="4" oninput="syncRepeatSlider(this.value)">
+      <span id="slider-n-val" style="font-family:monospace; font-weight:700; color:#c084fc; width:24px;">4</span>
+    </div>
+
+    <div class="console-box">
+      <div class="console-code">
+        <span class="prompt">&gt;&gt;&gt;</span>
+        <span id="repeat-code-expr">'Code ' * 4</span>
+      </div>
+      <div id="repeat-code-result" style="color:#4ade80; font-weight:700;">'Code Code Code Code '</div>
+    </div>
+
+    <div class="result-display">
+      <div class="res-title">Result</div>
+      <div class="res-value" id="repeat-visual-res" style="word-break: break-all; font-size:1.3rem;">"Code Code Code Code "</div>
+      <div style="margin-top:6px; color:var(--text-muted); font-size:0.85rem;" id="repeat-len-info"></div>
+    </div>
+
+    <div class="teaching-box">
+      <h3>Key Teaching Points</h3>
+      <ul>
+        <li><strong>Order Flexibility:</strong> <code>s * n</code> is equivalent to <code>n * s</code>.</li>
+        <li><strong>Non-Positive Multipliers:</strong> Multiplying by <code>0</code> or a negative number safely returns an empty string (<code>""</code>).</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 4. MEMBERSHIP SECTION -->
+  <section id="tab-membership" class="section-card">
+    <div class="section-header">
+      <div>
+        <h2>Membership Operators (<code>in</code> &amp; <code>not in</code>)</h2>
+        <p style="color:var(--text-muted); font-size:0.9rem;">Validates whether a target substring exists inside a string.</p>
+      </div>
+      <span class="badge badge-green">Returns Boolean</span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 14px; margin-bottom: 16px;">
+      <div class="input-group">
+        <label class="input-label" for="member-main">Target String (text):</label>
+        <input type="text" id="member-main" class="text-input" value="Machine Learning">
+      </div>
+      <div class="input-group">
+        <label class="input-label" for="member-sub">Substring to Search (sub):</label>
+        <input type="text" id="member-sub" class="text-input" value="Learn">
+      </div>
+    </div>
+
+    <div class="ribbon-wrapper">
+      <div id="member-grid" class="string-grid"></div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 10px;">
+      <div class="console-box" style="margin-bottom:0;">
+        <div class="console-code">
+          <span class="prompt">&gt;&gt;&gt;</span>
+          <span id="member-in-expr">'Learn' in text</span>
+        </div>
+        <div id="member-in-res" style="font-weight:700; font-size:1.1rem;">True</div>
+      </div>
+
+      <div class="console-box" style="margin-bottom:0;">
+        <div class="console-code">
+          <span class="prompt">&gt;&gt;&gt;</span>
+          <span id="member-notin-expr">'Learn' not in text</span>
+        </div>
+        <div id="member-notin-res" style="font-weight:700; font-size:1.1rem;">False</div>
+      </div>
+    </div>
+
+    <div class="info-card" id="member-explanation" style="margin-top:14px;"></div>
+
+    <div class="teaching-box">
+      <h3>Key Teaching Points</h3>
+      <ul>
+        <li><strong>Strict Case Sensitivity:</strong> <code>'learn' in 'Machine Learning'</code> is <code>False</code> due to capitalization.</li>
+        <li><strong>Empty String Edge Case:</strong> <code>"" in s</code> always evaluates to <code>True</code> for any string.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- 5. SLICING SECTION -->
+  <section id="tab-slicing" class="section-card">
+    <div class="section-header">
+      <div>
+        <h2>String Slicing (<code>s[start:stop:step]</code>)</h2>
+        <p style="color:var(--text-muted); font-size:0.9rem;">Extracts sub-segments using index intervals.</p>
+      </div>
+      <span class="badge badge-purple">[start : stop : step]</span>
+    </div>
+
+    <div class="input-group">
+      <label class="input-label" for="slice-word">Target String (s):</label>
+      <input type="text" id="slice-word" class="text-input" value="COMPUTATION">
+    </div>
+
+    <div class="slice-grid">
+      <div>
+        <label class="input-label" for="slice-start"><span style="color:#38bdf8;">start</span> (inclusive):</label>
+        <input type="text" id="slice-start" class="text-input" value="2" placeholder="default: 0">
+      </div>
+      <div>
+        <label class="input-label" for="slice-stop"><span style="color:#f472b6;">stop</span> (exclusive):</label>
+        <input type="text" id="slice-stop" class="text-input" value="8" placeholder="default: len">
+      </div>
+      <div>
+        <label class="input-label" for="slice-step"><span style="color:#34d399;">step</span> (stride):</label>
+        <input type="text" id="slice-step" class="text-input" value="1" placeholder="default: 1">
+      </div>
+    </div>
+
+    <div class="presets-container">
+      <span class="presets-label">Presets:</span>
+      <button class="btn-preset" onclick="setSlicePreset('2', '8', '1')">Basic [2:8]</button>
+      <button class="btn-preset" onclick="setSlicePreset('', '5', '1')">Omit start [:5]</button>
+      <button class="btn-preset" onclick="setSlicePreset('4', '', '1')">Omit stop [4:]</button>
+      <button class="btn-preset" onclick="setSlicePreset('', '', '2')">Every 2nd char [::2]</button>
+      <button class="btn-preset" onclick="setSlicePreset('', '', '-1')">Reverse [::-1]</button>
+      <button class="btn-preset" onclick="setSlicePreset('-5', '-1', '1')">Negative [-5:-1]</button>
+      <button class="btn-preset" onclick="setSlicePreset('8', '2', '-2')">Backwards [8:2:-2]</button>
+    </div>
+
+    <div class="ribbon-wrapper">
+      <div id="slice-grid" class="string-grid"></div>
+    </div>
+
+    <div class="console-box">
+      <div class="console-code">
+        <span class="prompt">&gt;&gt;&gt;</span>
+        <span id="slice-code-expr">s[2:8:1]</span>
+      </div>
+      <div id="slice-code-result" style="color:#4ade80; font-weight:700;">'MPUTAT'</div>
+    </div>
+
+    <div>
+      <span class="input-label">Extracted Character Sequence:</span>
+      <div class="trace-list" id="slice-trace"></div>
+    </div>
+
+    <div class="result-display">
+      <div class="res-title">Extracted Substring</div>
+      <div class="res-value" id="slice-visual-res">"MPUTAT"</div>
+      <div style="margin-top:6px; color:var(--text-muted); font-size:0.85rem;" id="slice-len-info"></div>
+    </div>
+
+    <div class="teaching-box">
+      <h3>Key Teaching Points</h3>
+      <ul>
+        <li><strong>Stop is Exclusive:</strong> Characters are collected up to <code>stop - 1</code>. The character at index <code>stop</code> is never included.</li>
+        <li><strong>No IndexError:</strong> Out-of-bounds slice indices are clipped gracefully without raising errors (e.g. <code>"Python"[2:99]</code> yields <code>"thon"</code>).</li>
+        <li><strong>String Reversal:</strong> <code>s[::-1]</code> reverses any string via a negative step.</li>
+      </ul>
+    </div>
+  </section>
+</div>
+
+<script>
+  function switchTab(tabId) {
+    document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelectorAll('.section-card').forEach(sec => sec.classList.remove('active'));
+
+    const btn = Array.from(document.querySelectorAll('.tab-btn')).find(b => b.getAttribute('onclick').includes(tabId));
+    if (btn) btn.classList.add('active');
+
+    const sec = document.getElementById('tab-' + tabId);
+    if (sec) sec.classList.add('active');
+  }
+
+  // 1. Indexing Logic
+  let currentWord = "PROGRAMMING";
+  let activeIndex = 0;
+
+  function renderIndexing() {
+    const container = document.getElementById('indexing-grid');
+    container.innerHTML = '';
+    const len = currentWord.length;
+
+    for (let i = 0; i < len; i++) {
+      const char = currentWord[i];
+      const col = document.createElement('div');
+      col.className = 'char-column' + (i === activeIndex ? ' active' : '');
+      col.onclick = () => selectIndex(i);
+      col.innerHTML = `
+        <div class="idx-forward">${i}</div>
+        <div class="char-cell">${char === ' ' ? '␣' : char}</div>
+        <div class="idx-backward">${i - len}</div>
+      `;
+      container.appendChild(col);
+    }
+    updateIndexOutput();
+  }
+
+  function selectIndex(idx) {
+    activeIndex = idx;
+    document.getElementById('test-index-input').value = idx;
+    updateIndexUI();
+  }
+
+  function stepIndex(delta) {
+    const input = document.getElementById('test-index-input');
+    let val = parseInt(input.value, 10);
+    if (isNaN(val)) val = 0;
+    input.value = val + delta;
+    onIndexInputChange();
+  }
+
+  function onIndexInputChange() {
+    const input = document.getElementById('test-index-input');
+    const val = parseInt(input.value, 10);
+    const len = currentWord.length;
+    const errBox = document.getElementById('index-error');
+
+    if (isNaN(val)) {
+      errBox.style.display = 'block';
+      errBox.innerText = 'ValueError: invalid index value';
+      return;
+    }
+
+    if (val >= len || val < -len) {
+      errBox.style.display = 'block';
+      errBox.innerHTML = `⚠️ <strong>IndexError: string index out of range</strong><br>
+        Valid forward range: <code>0</code> to <code>${len - 1}</code><br>
+        Valid backward range: <code>-${len}</code> to <code>-1</code>`;
+      document.querySelectorAll('#indexing-grid .char-column').forEach(c => c.classList.remove('active'));
+      document.getElementById('index-code-expr').innerText = `s[${val}]`;
+      document.getElementById('index-code-result').innerText = 'IndexError!';
+      document.getElementById('index-code-result').style.color = '#ef4444';
+      document.getElementById('index-explanation').innerHTML = `Index <strong>${val}</strong> does not exist in a string of length ${len}.`;
+      return;
+    }
+
+    errBox.style.display = 'none';
+    activeIndex = val >= 0 ? val : (len + val);
+    updateIndexUI();
+  }
+
+  function updateIndexUI() {
+    const cols = document.querySelectorAll('#indexing-grid .char-column');
+    cols.forEach((col, idx) => {
+      if (idx === activeIndex) {
+        col.classList.add('active');
+        col.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+      } else {
+        col.classList.remove('active');
+      }
+    });
+    updateIndexOutput();
+  }
+
+  function updateIndexOutput() {
+    const inputVal = parseInt(document.getElementById('test-index-input').value, 10);
+    const len = currentWord.length;
+    if (isNaN(inputVal) || inputVal >= len || inputVal < -len) return;
+
+    const char = currentWord[activeIndex];
+    const displayChar = char === ' ' ? '<space>' : char;
+    const forwardIdx = activeIndex;
+    const backwardIdx = activeIndex - len;
+
+    document.getElementById('index-code-expr').innerText = `s[${inputVal}]`;
+    document.getElementById('index-code-result').innerText = `'${char}'`;
+    document.getElementById('index-code-result').style.color = '#4ade80';
+
+    document.getElementById('index-explanation').innerHTML = `
+      Character: <strong style="color:#60a5fa;">'${displayChar}'</strong> &bull;
+      Forward: <code>s[${forwardIdx}]</code> &bull;
+      Backward: <code>s[${backwardIdx}]</code><br>
+      Relationship: <code>${forwardIdx} - len(s) = ${forwardIdx} - ${len} = ${backwardIdx}</code>.
+    `;
+  }
+
+  function setIndexWord(word) {
+    document.getElementById('idx-word-input').value = word;
+    currentWord = word;
+    activeIndex = 0;
+    document.getElementById('test-index-input').value = 0;
+    renderIndexing();
+  }
+
+  document.getElementById('idx-word-input').addEventListener('input', (e) => {
+    currentWord = e.target.value || " ";
+    activeIndex = 0;
+    document.getElementById('test-index-input').value = 0;
+    renderIndexing();
+  });
+  document.getElementById('test-index-input').addEventListener('input', onIndexInputChange);
+
+  // 2. Concatenation Logic
+  function renderConcat() {
+    const s1 = document.getElementById('concat-s1').value;
+    const s2 = document.getElementById('concat-s2').value;
+    const hasSpace = document.getElementById('concat-space-toggle').checked;
+
+    const res = hasSpace ? (s1 + " " + s2) : (s1 + s2);
+    const expr = hasSpace ? `s1 + " " + s2` : `s1 + s2`;
+
+    document.getElementById('concat-code-expr').innerText = expr;
+    document.getElementById('concat-code-result').innerText = `'${res}'`;
+    document.getElementById('concat-visual-res').innerText = `"${res}"`;
+    document.getElementById('concat-len-info').innerText = `Length: ${s1.length} + ${hasSpace ? '1 + ' : ''}${s2.length} = ${res.length} characters`;
+  }
+
+  document.getElementById('concat-s1').addEventListener('input', renderConcat);
+  document.getElementById('concat-s2').addEventListener('input', renderConcat);
+
+  // 3. Repetition Logic
+  function renderRepeat() {
+    const s = document.getElementById('repeat-str').value;
+    let n = parseInt(document.getElementById('repeat-n').value, 10);
+    if (isNaN(n)) n = 0;
+
+    const res = n > 0 ? s.repeat(Math.min(n, 50)) : "";
+    document.getElementById('repeat-code-expr').innerText = `'${s}' * ${n}`;
+    document.getElementById('repeat-code-result').innerText = `'${res}'`;
+    document.getElementById('repeat-visual-res').innerText = res === "" ? '"" (Empty string)' : `"${res}"`;
+    document.getElementById('repeat-len-info').innerText = n <= 0
+      ? `Multiplier <= 0 produces an empty string (length 0).`
+      : `Length: ${s.length} × ${n} = ${res.length} characters`;
+  }
+
+  function syncRepeatSlider(val) {
+    document.getElementById('repeat-n').value = val;
+    document.getElementById('slider-n-val').innerText = val;
+    renderRepeat();
+  }
+
+  document.getElementById('repeat-str').addEventListener('input', renderRepeat);
+  document.getElementById('repeat-n').addEventListener('input', (e) => {
+    const val = parseInt(e.target.value, 10);
+    if (!isNaN(val) && val >= 0 && val <= 10) {
+      document.getElementById('repeat-slider').value = val;
+      document.getElementById('slider-n-val').innerText = val;
+    }
+    renderRepeat();
+  });
+
+  // 4. Membership Logic
+  function renderMembership() {
+    const main = document.getElementById('member-main').value;
+    const sub = document.getElementById('member-sub').value;
+
+    const isMember = main.includes(sub);
+    const inBadge = document.getElementById('member-in-res');
+    inBadge.innerText = isMember ? 'True' : 'False';
+    inBadge.style.color = isMember ? '#4ade80' : '#ef4444';
+
+    const notInBadge = document.getElementById('member-notin-res');
+    notInBadge.innerText = !isMember ? 'True' : 'False';
+    notInBadge.style.color = !isMember ? '#4ade80' : '#ef4444';
+
+    document.getElementById('member-in-expr').innerText = `'${sub}' in text`;
+    document.getElementById('member-notin-expr').innerText = `'${sub}' not in text`;
+
+    const container = document.getElementById('member-grid');
+    container.innerHTML = '';
+    const matchIdx = sub.length > 0 ? main.indexOf(sub) : 0;
+
+    for (let i = 0; i < main.length; i++) {
+      const isMatch = sub.length > 0 && matchIdx !== -1 && i >= matchIdx && i < matchIdx + sub.length;
+      const col = document.createElement('div');
+      col.className = 'char-column' + (isMatch ? ' active' : '');
+      col.innerHTML = `
+        <div class="idx-forward">${i}</div>
+        <div class="char-cell">${main[i] === ' ' ? '␣' : main[i]}</div>
+      `;
+      container.appendChild(col);
+    }
+
+    const expl = document.getElementById('member-explanation');
+    if (sub === "") {
+      expl.innerHTML = `An empty string <code>""</code> is always contained in every string: returns <strong>True</strong>.`;
+    } else if (matchIdx !== -1) {
+      expl.innerHTML = `Found substring <strong>'${sub}'</strong> starting at index <strong>${matchIdx}</strong>. <code>in</code> returns <strong>True</strong>.`;
+    } else {
+      expl.innerHTML = `Substring <strong>'${sub}'</strong> was NOT found (case-sensitive). <code>in</code> returns <strong>False</strong>.`;
+    }
+  }
+
+  document.getElementById('member-main').addEventListener('input', renderMembership);
+  document.getElementById('member-sub').addEventListener('input', renderMembership);
+
+  // 5. Slicing Logic
+  function pythonSlice(str, startRaw, stopRaw, stepRaw) {
+    const len = str.length;
+    let step = stepRaw.trim() === "" ? 1 : parseInt(stepRaw, 10);
+    if (isNaN(step) || step === 0) step = 1;
+
+    let start, stop;
+    if (step > 0) {
+      start = startRaw.trim() === "" ? 0 : parseInt(startRaw, 10);
+      stop = stopRaw.trim() === "" ? len : parseInt(stopRaw, 10);
+      if (isNaN(start)) start = 0;
+      if (isNaN(stop)) stop = len;
+
+      if (start < 0) start = Math.max(0, len + start);
+      if (stop < 0) stop = Math.max(0, len + stop);
+      start = Math.min(start, len);
+      stop = Math.min(stop, len);
+    } else {
+      start = startRaw.trim() === "" ? len - 1 : parseInt(startRaw, 10);
+      stop = stopRaw.trim() === "" ? -1 : parseInt(stopRaw, 10);
+      if (isNaN(start)) start = len - 1;
+      if (isNaN(stop)) stop = -1;
+
+      if (start < 0) start = Math.max(-1, len + start);
+      if (stop < 0 && stop !== -1) stop = Math.max(-1, len + stop);
+      start = Math.min(start, len - 1);
+    }
+
+    const indices = [];
+    let res = "";
+    if (step > 0) {
+      for (let i = start; i < stop; i += step) {
+        indices.push(i);
+        res += str[i];
+      }
+    } else {
+      for (let i = start; i > stop; i += step) {
+        indices.push(i);
+        res += str[i];
+      }
+    }
+    return { res, indices };
+  }
+
+  function renderSlicing() {
+    const word = document.getElementById('slice-word').value || "";
+    const startVal = document.getElementById('slice-start').value;
+    const stopVal = document.getElementById('slice-stop').value;
+    const stepVal = document.getElementById('slice-step').value;
+
+    const { res, indices } = pythonSlice(word, startVal, stopVal, stepVal);
+
+    let syntax = `s[${startVal.trim()}:${stopVal.trim()}`;
+    if (stepVal.trim() !== "" && stepVal.trim() !== "1") {
+      syntax += `:${stepVal.trim()}`;
+    }
+    syntax += `]`;
+
+    document.getElementById('slice-code-expr').innerText = syntax;
+    document.getElementById('slice-code-result').innerText = `'${res}'`;
+    document.getElementById('slice-visual-res').innerText = `"${res}"`;
+    document.getElementById('slice-len-info').innerText = `Length: ${res.length} characters`;
+
+    const grid = document.getElementById('slice-grid');
+    grid.innerHTML = '';
+
+    for (let i = 0; i < word.length; i++) {
+      const isSelected = indices.includes(i);
+      const col = document.createElement('div');
+      col.className = 'char-column' + (isSelected ? ' slice-selected' : ' slice-dimmed');
+      col.innerHTML = `
+        <div class="idx-forward">${i}</div>
+        <div class="char-cell">${word[i] === ' ' ? '␣' : word[i]}</div>
+        <div class="idx-backward">${i - word.length}</div>
+      `;
+      grid.appendChild(col);
+    }
+
+    const trace = document.getElementById('slice-trace');
+    trace.innerHTML = '';
+    if (indices.length === 0) {
+      trace.innerHTML = '<span style="color:#94a3b8; font-size:0.85rem;">Empty slice.</span>';
+    } else {
+      indices.forEach(idx => {
+        const item = document.createElement('span');
+        item.className = 'trace-item';
+        item.innerText = `s[${idx}] -> '${word[idx]}'`;
+        trace.appendChild(item);
+      });
+    }
+  }
+
+  function setSlicePreset(start, stop, step) {
+    document.getElementById('slice-start').value = start;
+    document.getElementById('slice-stop').value = stop;
+    document.getElementById('slice-step').value = step;
+    renderSlicing();
+  }
+
+  document.getElementById('slice-word').addEventListener('input', renderSlicing);
+  document.getElementById('slice-start').addEventListener('input', renderSlicing);
+  document.getElementById('slice-stop').addEventListener('input', renderSlicing);
+  document.getElementById('slice-step').addEventListener('input', renderSlicing);
+
+  // Initialize all sections
+  window.addEventListener('DOMContentLoaded', () => {
+    renderIndexing();
+    renderConcat();
+    renderRepeat();
+    renderMembership();
+    renderSlicing();
+  });
+</script>
+</body>
+</html>
